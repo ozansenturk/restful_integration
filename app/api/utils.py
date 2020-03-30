@@ -1,74 +1,25 @@
-import requests
-import functools
-import time
+from app.models import Report
 from flask import current_app
 
-def cache(_func=None, *, expiration_time):
 
-    def decorator_name(func):
-        """Keep a cache of previous function calls"""
-        @functools.wraps(func)
-        def wrapper_cache(*args, **kwargs):
-            cache_key = "TOKEN"
-            if time.time() > wrapper_cache.expiration_time:
-                wrapper_cache.cache[cache_key] = func(*args, **kwargs)
-                wrapper_cache.expiration_time = time.time() + expiration_time
-            else:
-                if cache_key not in wrapper_cache.cache:
-                    wrapper_cache.cache[cache_key] = func(*args, **kwargs)
-
-            return wrapper_cache.cache[cache_key]
-
-        wrapper_cache.expiration_time = time.time() + expiration_time
-        wrapper_cache.cache = dict()
-
-        return wrapper_cache
-
-    if _func is None:
-        return decorator_name
-    else:
-        return decorator_name(_func)
+def convert_report_dict(report_dict):
+    tmp = Report(report_dict['count'], report_dict['total'], report_dict['currency'])
+    current_app.logger.debug("tmp is {}".format(tmp))
+    return tmp
 
 
-@cache(expiration_time=30)
-def get_token(login_url, email, password):
-    """
-    gets the token
+def convert_report_json_2_object(json_list):
 
-    :param host:
-    :param email:
-    :param password:
-    :return:
-    """
+    report_list = [ convert_report_dict(item) for item in json_list ]
 
-    token_body = {"email": email, "password": password}
+    return report_list
 
-    response = requests.post(current_app.config['HOST']+login_url, json=token_body)
+def add_to_dict_if_form_field_exist(one_dict, dict_key, form_field, is_integer=False):
 
-    return response.json()
+    if form_field != '':
+        if is_integer:
+            one_dict[dict_key] = int(form_field)
+        else:
+            one_dict[dict_key] = form_field
 
-
-def build_header(token):
-    """
-    creates Authorization header with the value of token
-    :param token:
-    :return:
-    """
-
-    headers = {}
-    headers["Authorization"] = token
-
-    return headers
-
-
-def post_query(url, one_token, data):
-
-    headers = build_header(one_token)
-
-    response = requests.post(current_app.config['HOST']+url, data=data, headers=headers)
-
-    print("response: {}".format(response.json()))
-
-    return response.json()
-
-
+    return one_dict
