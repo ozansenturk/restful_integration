@@ -12,6 +12,14 @@ class Config:
     TOKEN_EXPIRATION_TIME = 30
     HOST = "https://sandbox-reporting.rpdpymnt.com/api/v3"
 
+    LOGIN_URL = "/merchant/user/login"
+    REPORT_URL = "/transactions/report"
+    TRANSACTION_QUERY_URL = "/transaction/list"
+    TRANSACTION_URL = "/transaction"
+    CLIENT_URL = "/client"
+
+    EMAIL = "demo@financialhouse.io"
+    PASSWORD = "cjaiU8CV"
 
     @staticmethod
     def init_app(app):

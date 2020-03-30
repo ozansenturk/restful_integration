@@ -9,5 +9,16 @@ class Token():
         self.status = status  # instance variable unique to each instance
 
     def __repr__(self):
-        return '<Token {} with token: {}, status: {}' \
+        return '<Token composed of  token: {}, status: {}' \
             .format(self.token, self.status)
+
+class Report():
+
+    def __init__(self, count, total, currency):
+        self.count = count
+        self.total = total
+        self.currency = currency
+
+    def __repr__(self):
+        return '<Report composed of count: {}, total: {}, currency: {}' \
+            .format(self.count, self.total, self.currency)
