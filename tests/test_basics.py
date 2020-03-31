@@ -123,4 +123,20 @@ class BasicsTestCase(unittest.TestCase):
 
         self.assertGreater(len(query_list), 0)
 
+    def test_transaction_query_request_for_object_conversion_for_page2(self):
+
+        page = 2
+        token = self.token_response['token']
+
+        data = {"fromDate": "2000-01-01", "toDate": "2020-04-01"}
+        params = {'page': 2 }
+
+        response = post_query(current_app.config['TRANSACTION_QUERY_URL'], token, data, params)
+
+        transaction_query_list = response['data']
+
+        query_list = utils.convert_transaction_query_json_2_object_list(transaction_query_list)
+
+        self.assertGreater(len(query_list), 0)
+
 

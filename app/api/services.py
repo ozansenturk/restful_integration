@@ -66,11 +66,11 @@ def build_header(token):
     return headers
 
 
-def post_query(url, one_token, data):
+def post_query(url, one_token, data, params=None):
 
     headers = build_header(one_token)
 
-    response = requests.post(current_app.config['HOST']+url, data=data, headers=headers)
+    response = requests.post(current_app.config['HOST']+url, data=data, headers=headers, params=params)
 
     current_app.logger.debug("Response: {} ".format(response.json()))
 
