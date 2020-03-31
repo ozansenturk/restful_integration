@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <h1>Get Reports</h1>
+    <div class="row">
+        <div class="col-md-4">
+            {{ wtf.quick_form(form) }}
+        </div>
+        <br>
+        <div>
+            <table class="table table-hover">
+     <thead>
+          <tr>
+
+              <th scope="col">#</th>
+              <th>count</th>
+              <th>total</th>
+              <th>currency</th>
+
+          </tr>
+     </thead>
+     <tbody>
+    {% for report in reports %}
+           <tr>
+
+               <th scope="row">{{ loop.index}}</th>
+
+
+               <td>{{ report.count }}</td>
+               <td>{{ report.total }}</td>
+               <td>{{ report.currency }}</td>
+
+           </tr>
+    {% endfor %}
+
+
+     </tbody>
+      </table>
+        </div>
+    </div>
+{% endblock %}

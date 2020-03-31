@@ -5,6 +5,7 @@ from faker import Faker
 from app.api.services import get_token, post_query
 from app.api import utils
 
+
 class BasicsTestCase(unittest.TestCase):
 
     def setUp(self):
@@ -13,6 +14,9 @@ class BasicsTestCase(unittest.TestCase):
         self.app_context.push()
         self.fake = Faker()
         self.fake.seed_instance(103)
+        self.email=current_app.config['EMAIL']
+        self.password= current_app.config['PASSWORD']
+        self.token_response = get_token(current_app.config['LOGIN_URL'], self.email, self.password)
 
     def tearDown(self):
         self.app_context.pop()
@@ -25,23 +29,13 @@ class BasicsTestCase(unittest.TestCase):
 
     def test_get_token(self):
 
-        email = current_app.config['EMAIL']
-        password = current_app.config['PASSWORD']
-
-        token_response = get_token(current_app.config['LOGIN_URL'], email, password)
-
-        status = token_response['status']
+        status = self.token_response['status']
 
         self.assertEqual(status, "APPROVED", "status is approved")
 
     def test_report_request_with_valid_token(self):
 
-        email = current_app.config['EMAIL']
-        password = current_app.config['PASSWORD']
-
-        token_response = get_token(current_app.config['LOGIN_URL'], email, password)
-
-        token = token_response['token']
+        token = self.token_response['token']
 
         data = {"fromDate": "2000-01-01", "toDate": "2020-04-01"}
 
@@ -65,12 +59,7 @@ class BasicsTestCase(unittest.TestCase):
 
     def test_transaction_query_request(self):
 
-        email = current_app.config['EMAIL']
-        password = current_app.config['PASSWORD']
-
-        token_response = get_token(current_app.config['LOGIN_URL'], email, password)
-
-        token = token_response['token']
+        token = self.token_response['token']
 
         data = {"fromDate": "2000-01-01", "toDate": "2020-04-01"}
 
@@ -82,47 +71,31 @@ class BasicsTestCase(unittest.TestCase):
 
     def test_transaction(self):
 
-        email = current_app.config['EMAIL']
-        password = current_app.config['PASSWORD']
-
-        token_response = get_token(current_app.config['LOGIN_URL'], email, password)
-
-        token = token_response['token']
+        token = self.token_response['token']
 
         data = {"transactionId": "1011028-1539357144-1293"}
 
         response = post_query(current_app.config['TRANSACTION_URL'], token, data)
 
-        customerInfo = response['customerInfo']
+        customer_info = response['customerInfo']
 
-        self.assertGreater(len(customerInfo) , 0, "response should contain data")
+        self.assertGreater(len(customer_info) , 0, "response should contain data")
 
     def test_client(self):
 
-        email = current_app.config['EMAIL']
-        password = current_app.config['PASSWORD']
-
-        token_response = get_token(current_app.config['LOGIN_URL'], email, password)
-
-        token = token_response['token']
+        token = self.token_response['token']
 
         data = {"transactionId": "1011028-1539357144-1293"}
 
         response = post_query(current_app.config['CLIENT_URL'], token, data)
 
-        customerInfo = response['customerInfo']
+        customer_info = response['customerInfo']
 
-        self.assertGreater(len(customerInfo), 0, "response should contain data")
-
+        self.assertGreater(len(customer_info), 0, "response should contain data")
 
     def test_report_request_for_object_conversion(self):
 
-        email = current_app.config['EMAIL']
-        password = current_app.config['PASSWORD']
-
-        token_response = get_token(current_app.config['LOGIN_URL'], email, password)
-
-        token = token_response['token']
+        token = self.token_response['token']
 
         data = {"fromDate": "2000-01-01", "toDate": "2020-04-01"}
 
@@ -135,3 +108,20 @@ class BasicsTestCase(unittest.TestCase):
         tmp_list = utils.convert_report_json_2_object(response_data['response'])
 
         self.assertGreater(len(tmp_list),0)
+
+    def test_transaction_query_request_for_object_conversion(self):
+
+        token = self.token_response['token']
+
+        data = {"fromDate": "2000-01-01", "toDate": "2020-04-01"}
+
+        response = post_query(current_app.config['TRANSACTION_QUERY_URL'], token, data)
+
+        transaction_query_list = response['data']
+
+        query_list = [utils.convert_transaction_query_dict(transaction_query)
+                      for transaction_query in transaction_query_list]
+
+        self.assertGreater(len(query_list), 0)
+
+

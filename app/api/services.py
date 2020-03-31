@@ -12,10 +12,14 @@ def cache(_func=None, *, expiration_time):
             cache_key = "TOKEN"
             if time.time() > wrapper_cache.expiration_time:
                 wrapper_cache.cache[cache_key] = func(*args, **kwargs)
+                current_app.logger.debug("token expired and refreshed again ")
                 wrapper_cache.expiration_time = time.time() + expiration_time
             else:
                 if cache_key not in wrapper_cache.cache:
                     wrapper_cache.cache[cache_key] = func(*args, **kwargs)
+                    current_app.logger.debug("token retrieved from API ")
+                else:
+                    current_app.logger.debug("token retrieved from cache ")
 
             return wrapper_cache.cache[cache_key]
 
@@ -30,7 +34,7 @@ def cache(_func=None, *, expiration_time):
         return decorator_name(_func)
 
 
-@cache(expiration_time=30)
+@cache(expiration_time=500)
 def get_token(login_url, email, password):
     """
     gets the token
@@ -44,6 +48,7 @@ def get_token(login_url, email, password):
     token_body = {"email": email, "password": password}
 
     response = requests.post(current_app.config['HOST']+login_url, json=token_body)
+    current_app.logger.debug("get_token service executed ")
 
     return response.json()
 
@@ -67,7 +72,7 @@ def post_query(url, one_token, data):
 
     response = requests.post(current_app.config['HOST']+url, data=data, headers=headers)
 
-    print("response: {}".format(response.json()))
+    current_app.logger.debug("Response: {} ".format(response.json()))
 
     return response.json()
 
