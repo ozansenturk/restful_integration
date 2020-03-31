@@ -2,7 +2,7 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block app_content %}
-    <h1>Get Reports</h1>
+    <h1>Transaction Query</h1>
     <div class="row">
         <div class="col-md-4">
             {{ wtf.quick_form(form) }}
@@ -14,26 +14,51 @@
           <tr>
 
               <th scope="col">#</th>
-              <th>count</th>
-              <th>total</th>
-              <th>currency</th>
+              <th>fx_original_amnt</th>
+              <th>fx_original_cry</th>
+              <th>name</th>
+              <th>lastname</th>
+              <th>merchant_name</th>
+              <th>ipn</th>
+              <th>ref_no</th>
+              <th>status</th>
+              <th>operation</th>
+              <th>created</th>
+              <th>acquirer_name</th>
+              <th>acquirer_type</th>
+              <th>refundable</th>
 
           </tr>
      </thead>
      <tbody>
-    {% for report in reports %}
+    {% for transaction_query in transaction_queries %}
            <tr>
 
                <th scope="row">{{ loop.index}}</th>
 
 
-               <td>{{ report.count }}</td>
-               <td>{{ report.total }}</td>
-               <td>{{ report.currency }}</td>
+               <td>{{ transaction_query.updated_at }}</td>
+               <td>{{ transaction_query.created_at }}</td>
+
 
            </tr>
     {% endfor %}
-
+     <div>
+     <nav aria-label="...">
+        <ul class="pager">
+            <li class="previous{% if not prev_url %} disabled{% endif %}">
+                <a href="{{ prev_url or '#' }}">
+                    <span aria-hidden="true">&larr;</span> {{ 'Previous transaction query' }}
+                </a>
+            </li>
+            <li class="next{% if not next_url %} disabled{% endif %}">
+                <a href="{{ next_url or '#' }}">
+                    {{ 'Next transaction query' }} <span aria-hidden="true">&rarr;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    </div>
 
      </tbody>
       </table>

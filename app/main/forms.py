@@ -11,3 +11,17 @@ class ReportForm(FlaskForm):
     merchant = StringField('Merchant')
     acquirer = StringField('Acquirer')
     submit = SubmitField('Process')
+
+
+class TransactionQueryForm(ReportForm):
+
+    status = StringField('Status')
+    operation = StringField('Operation')
+
+    payment_method = StringField('Operation')
+    error_code = StringField('Operation')
+    filter_field = StringField('Operation')
+    filter_value = StringField('Operation')
+    page = StringField('Page')
+
+    submit = SubmitField('Process')

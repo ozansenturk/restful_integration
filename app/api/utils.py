@@ -74,3 +74,12 @@ def convert_transaction_query_json_2_object_list(transaction_query_dict_list):
                   for transaction_query_dict in transaction_query_dict_list]
 
     return query_list
+
+
+def extract_page_number(url_str):
+    index = url_str.find("page=")
+
+    page_num = url_str[index+5:]
+    current_app.logger.debug("Page Number is {}".format(page_num))
+
+    return page_num

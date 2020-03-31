@@ -129,7 +129,7 @@ class BasicsTestCase(unittest.TestCase):
         token = self.token_response['token']
 
         data = {"fromDate": "2000-01-01", "toDate": "2020-04-01"}
-        params = {'page': 2 }
+        params = {'page': page}
 
         response = post_query(current_app.config['TRANSACTION_QUERY_URL'], token, data, params)
 
@@ -138,5 +138,15 @@ class BasicsTestCase(unittest.TestCase):
         query_list = utils.convert_transaction_query_json_2_object_list(transaction_query_list)
 
         self.assertGreater(len(query_list), 0)
+
+    def test_get_page_number(self):
+
+        url_str = "https://sandbox-reporting.rpdpymnt.com/api/v3/transaction/list?page=3"
+
+        page_num = utils.extract_page_number(url_str)
+
+        self.assertEqual(page_num, "3")
+
+
 
 
