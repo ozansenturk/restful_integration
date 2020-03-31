@@ -2,7 +2,7 @@ from app import db
 from datetime import datetime
 
 
-class Token():
+class Token:
 
     def __init__(self, token, status):
         self.token = token  # instance variable unique to each instance
@@ -12,7 +12,7 @@ class Token():
         return '<Token composed of  token: {}, status: {}' \
             .format(self.token, self.status)
 
-class Report():
+class Report:
 
     def __init__(self, count, total, currency):
         self.count = count
@@ -23,7 +23,7 @@ class Report():
         return '<Report composed of count: {}, total: {}, currency: {}' \
             .format(self.count, self.total, self.currency)
 
-class MerchantBase():
+class MerchantBase:
     def __init__(self, id, name):
         self.id = id
         self.name = name
@@ -64,7 +64,7 @@ class Acquirer(MerchantBase):
             .format(self.code, self.type)
 
 
-class CustomerInfoBase():
+class CustomerInfoBase:
     def __init__(self, number, email, billing_first_name, billing_last_name):
         self.number = number
         self.email = email
@@ -77,7 +77,7 @@ class CustomerInfoBase():
             .format(self.number, self.email, self.billing_first_name, self.billing_last_name)
 
 
-class FxMerchant():
+class FxMerchant:
     def __init__(self, original_amount, original_currency):
         self.original_amount = original_amount
         self.original_currency = original_currency
@@ -87,21 +87,14 @@ class FxMerchant():
             .format(self.original_amount, self.original_currency)
 
 
-class TransactionQuery():
+class TransactionQuery:
 
-    def __init__(self, fx_merchant, customer_info, merchant, ipn,
-                 transaction_merchant, acquirer, refundable):
-
-        self.fx_merchant = fx_merchant
-        self.customer_info = customer_info
-        self.merchant = merchant
-        self.ipn = ipn
-        self.transaction_merchant = transaction_merchant
-        self.acquirer = acquirer
-        self.refundable = refundable
+    def __init__(self, *initial_data, **kwargs):
+        for dictionary in initial_data:
+            for key in dictionary:
+                setattr(self, key, dictionary[key])
+        for key in kwargs:
+            setattr(self, key, kwargs[key])
 
     def __repr__(self):
-        return '<TransactionQuery composed of fx_merchant: {}, customer_info: {}, ' \
-               'merchant: {}, ipn: {}, transaction_merchant: {}, acquirer: {}, refundable: {}' \
-            .format(self.fx_merchant, self.customer_info, self.merchant, self.ipn
-                    , self.transaction_merchant, self.acquirer, self.refundable)
+        return str(self.__dict__)

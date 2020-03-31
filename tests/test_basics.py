@@ -105,7 +105,7 @@ class BasicsTestCase(unittest.TestCase):
 
         self.assertEqual(status, "APPROVED", "status is not approved")
 
-        tmp_list = utils.convert_report_json_2_object(response_data['response'])
+        tmp_list = utils.convert_report_json_2_object_list(response_data['response'])
 
         self.assertGreater(len(tmp_list),0)
 
@@ -119,8 +119,7 @@ class BasicsTestCase(unittest.TestCase):
 
         transaction_query_list = response['data']
 
-        query_list = [utils.convert_transaction_query_dict(transaction_query)
-                      for transaction_query in transaction_query_list]
+        query_list = utils.convert_transaction_query_json_2_object_list(transaction_query_list)
 
         self.assertGreater(len(query_list), 0)
 

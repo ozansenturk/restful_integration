@@ -8,7 +8,7 @@ def convert_report_dict(report_dict):
     return tmp
 
 
-def convert_report_json_2_object(json_list):
+def convert_report_json_2_object_list(json_list):
 
     report_list = [ convert_report_dict(item) for item in json_list ]
 
@@ -60,11 +60,17 @@ def convert_acquirer_dict(acquirer_dict):
     return tmp
 
 
-def convert_transaction_query_dict(transaction_query_dict):
-    tmp = TransactionQuery(transaction_query_dict['fx'], transaction_query_dict['customerInfo'],
-                     transaction_query_dict['merchant'], transaction_query_dict['ipn']['sent'],
-                transaction_query_dict['transaction'], transaction_query_dict['acquirer']
-                           , transaction_query_dict['refundable'])
+def initialize_transaction_query_with_dict(transaction_query_dict):
+
+    tmp = TransactionQuery(transaction_query_dict)
 
     current_app.logger.debug("TransactionQuery is {}".format(tmp))
     return tmp
+
+
+def convert_transaction_query_json_2_object_list(transaction_query_dict_list):
+
+    query_list = [initialize_transaction_query_with_dict(transaction_query_dict)
+                  for transaction_query_dict in transaction_query_dict_list]
+
+    return query_list
