@@ -1,5 +1,5 @@
 from app.main import bp
-from flask import render_template,request, url_for,current_app,flash, redirect
+from flask import render_template,request, url_for,current_app,flash, redirect, session
 from app.main.forms import ReportForm, TransactionQueryForm
 from app.api import services
 from flask import abort
@@ -67,20 +67,48 @@ def transaction_query(page):
 
     transaction_query_list = []
 
-    form = TransactionQueryForm()
-    if form.validate_on_submit():
+    token = services.get_token(current_app.config['LOGIN_URL'],
+                               current_app.config['EMAIL'], current_app.config['PASSWORD'])
 
-        token = services.get_token(current_app.config['LOGIN_URL'],
-                                   current_app.config['EMAIL'], current_app.config['PASSWORD'])
+    current_app.logger.debug("token is {}".format(token))
 
-        current_app.logger.debug("token is {}".format(token))
+    one_token = token['token']
+    status = token['status']
 
-        one_token = token['token']
-        status = token['status']
+    if status != 'APPROVED':
+        current_app.logger.debug("status is {}".format(status))
+        abort(500)
 
-        if status != 'APPROVED':
-            current_app.logger.debug("status is {}".format(status))
-            abort(500)
+    if request.method == 'GET':
+        form = TransactionQueryForm(formdata=request.form)
+        data = session['data']
+        current_app.logger.debug("GET executed")
+        response = services.post_query(current_app.config['TRANSACTION_QUERY_URL'],
+                                       one_token, data, params={"page": page})
+
+        response_list = response['data']
+
+        if len(response_list) == 0:
+            current_app.logger.debug("no transaction_query data found {}".format(response_list))
+            abort(404)
+
+        transaction_query_list = utils.convert_transaction_query_json_2_object_list(response_list)
+
+        if "prev_page_url" in response and response["prev_page_url"] is not None:
+            prev_url = "/transaction_query/" + utils.extract_page_number(response["prev_page_url"])
+
+        if "next_page_url" in response and response["next_page_url"] is not None:
+            next_url = "/transaction_query/" + \
+                       utils.extract_page_number(response["next_page_url"])
+
+        current_page = response['current_page']
+        per_page = response['per_page']
+        from_ = response['from']
+
+    else:
+        form = TransactionQueryForm()
+
+    if request.method == 'POST' and form.validate_on_submit():
 
         data = {"fromDate": form.fromDate.data.strftime('%Y-%m-%d'), "toDate": form.toDate.data.strftime('%Y-%m-%d')}
 
@@ -94,10 +122,12 @@ def transaction_query(page):
         data = utils.add_to_dict_if_form_field_exist(data, 'filterValue', form.filter_value.data)
         data = utils.add_to_dict_if_form_field_exist(data, 'page', form.page.data, True)
 
+        session['data'] = data
         current_app.logger.debug("filter data for report is {}".format(data))
 
         response = services.post_query(current_app.config['TRANSACTION_QUERY_URL'], one_token, data)
-        current_app.logger.debug("response from report url is {}".format(response))
+
+        # current_app.logger.debug("response from report url is {}".format(response))
 
         response_list = response['data']
 
@@ -108,8 +138,7 @@ def transaction_query(page):
         transaction_query_list = utils.convert_transaction_query_json_2_object_list(response_list)
 
         if "prev_page_url" in response and response["prev_page_url"] is not None:
-            prev_url = "/transaction_query/"+\
-                       utils.extract_page_number(response["prev_page_url"])
+            prev_url = "/transaction_query/"+utils.extract_page_number(response["prev_page_url"])
 
         if "next_page_url" in response and response["next_page_url"] is not None:
             next_url = "/transaction_query/"+\
