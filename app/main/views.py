@@ -93,6 +93,7 @@ def transaction_query(page):
             abort(404)
 
         transaction_query_list = utils.convert_transaction_query_json_2_object_list(response_list)
+        current_app.logger.debug("response from report url is {}".format(transaction_query_list))
 
         if "prev_page_url" in response and response["prev_page_url"] is not None:
             prev_url = "/transaction_query/" + utils.extract_page_number(response["prev_page_url"])

@@ -7,43 +7,8 @@
         <div class="col-md-4">
             {{ wtf.quick_form(form) }}
         </div>
-        <br>
-        <div>
-            <table class="table table-hover">
-     <thead>
-          <tr>
-
-              <th scope="col">#</th>
-              <th>fx_original_amnt</th>
-              <th>fx_original_cry</th>
-              <th>name</th>
-              <th>lastname</th>
-              <th>merchant_name</th>
-              <th>ipn</th>
-              <th>ref_no</th>
-              <th>status</th>
-              <th>operation</th>
-              <th>created</th>
-              <th>acquirer_name</th>
-              <th>acquirer_type</th>
-              <th>refundable</th>
-
-          </tr>
-     </thead>
-     <tbody>
-    {% for transaction_query in transaction_queries %}
-           <tr>
-
-               <th scope="row">{{ loop.index}}</th>
-
-
-               <td>{{ transaction_query.updated_at }}</td>
-               <td>{{ transaction_query.created_at }}</td>
-
-
-           </tr>
-    {% endfor %}
-     <div>
+    </div>
+ <div>
      <nav aria-label="...">
         <ul class="pager">
             <li class="previous{% if not prev_url %} disabled{% endif %}">
@@ -59,9 +24,60 @@
         </ul>
     </nav>
     </div>
+        <br>
+
+            <table class="table table-hover">
+     <thead>
+          <tr>
+
+              <th scope="col">#</th>
+              <th>FirstName</th>
+              <th>LastName</th>
+              <th>Amount</th>
+              <th>Currency</th>
+
+              <th>Acquirer</th>
+              <th>Merchant</th>
+
+              <th>TransactionID</th>
+              <th>ReferenceNo</th>
+              <th>Status</th>
+              <th>Message</th>
+              <th>Type</th>
+              <th>Creation</th>
+
+          </tr>
+     </thead>
+     <tbody>
+    {% for transaction_query in transaction_queries %}
+           <tr>
+
+               {% if page and per_page%}
+                    <th scope="row">{{ loop.index + (page - 1) * per_page }}</th>
+               {% else %}
+
+               {% endif %}
+               <td>{{ transaction_query.CustomerInfoBase.billingFirstName }}</td>
+               <td>{{ transaction_query.CustomerInfoBase.billingLastName }}</td>
+               <td>{{ transaction_query.FxMerchant.originalAmount }}</td>
+               <td>{{ transaction_query.FxMerchant.originalCurrency }}</td>
+
+               <td>{{ transaction_query.Acquirer.type }}</td>
+               <td>{{ transaction_query.MerchantBase.name }}</td>
+
+               <td>{{ transaction_query.Merchant.transactionId }}</td>
+               <td>{{ transaction_query.Merchant.referenceNo }}</td>
+               <td>{{ transaction_query.Merchant.status }}</td>
+               <td>{{ transaction_query.Merchant.message }}</td>
+               <td>{{ transaction_query.Merchant.type }}</td>
+               <td>{{ transaction_query.Merchant.created_at }}</td>
+
+
+           </tr>
+    {% endfor %}
+
 
      </tbody>
       </table>
-        </div>
-    </div>
+
 {% endblock %}

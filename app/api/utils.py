@@ -63,7 +63,6 @@ def convert_acquirer_dict(acquirer_dict):
 def initialize_transaction_query_with_dict(transaction_query_dict):
 
     tmp = TransactionQuery(transaction_query_dict)
-
     current_app.logger.debug("TransactionQuery is {}".format(tmp))
     return tmp
 
