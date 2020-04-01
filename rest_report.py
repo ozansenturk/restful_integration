@@ -1,9 +1,7 @@
 import sys
 import click
 import os
-from app import create_app, db
-from flask_migrate import Migrate
-
+from app import create_app
 
 COV = None
 if os.environ.get('FLASK_COVERAGE'):
@@ -14,13 +12,10 @@ if os.environ.get('FLASK_COVERAGE'):
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 
-migrate = Migrate(app, db)
-
 
 @app.shell_context_processor
 def make_shell_context():
-    return {'db': db
-            }
+    return {}
 
 
 @app.cli.command()

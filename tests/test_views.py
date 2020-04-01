@@ -14,8 +14,7 @@ class FlaskClientTestCase(unittest.TestCase):
     def tearDown(self):
         self.app_context.pop()
 
-    def test_transaction_query_page(self):
-        response = self.client.get('/transaction_query/2')
+    def test_transaction_page(self):
+        response = self.client.post('/transaction')
         self.assertEqual(response.status_code, 200)
-        # self.app.logger.debug("response.data {}".format(response.data))
-        self.assertTrue(b'Tenants within 25 years listed' in response.data)
+
