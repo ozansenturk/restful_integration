@@ -33,6 +33,15 @@ def convert_transaction_json_2_object(transaction_dict):
 
     return merc
 
+def convert_customer_json_2_object(customer_dict):
+
+    cust = CustomerInfoBase(customer_dict['number'],
+                        customer_dict['email'],
+                        customer_dict['billingFirstName'],
+                        customer_dict['billingLastName'])
+
+    return cust
+
 
 def add_to_dict_if_form_field_exist(one_dict, dict_key, form_field, is_integer=False):
 

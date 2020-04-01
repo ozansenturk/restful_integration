@@ -194,3 +194,42 @@ def transaction():
         transaction = utils.convert_transaction_json_2_object(transaction)
 
     return render_template('transaction.html', form=form, transaction=transaction)
+
+@bp.route('/client', methods=['GET', 'POST'])
+def client():
+
+    customer_info = None
+
+    form = TransactionForm()
+    if form.validate_on_submit():
+
+        token = services.get_token(current_app.config['LOGIN_URL'],
+                                   current_app.config['EMAIL'], current_app.config['PASSWORD'])
+
+        current_app.logger.debug("token is {}".format(token))
+
+        one_token = token['token']
+        status = token['status']
+
+        if status != 'APPROVED':
+            current_app.logger.debug("status is {}".format(status))
+            abort(500)
+
+
+        data = {"transactionId": form.transaction_id.data}
+
+        current_app.logger.debug("filter data for transaction is {}".format(data))
+
+        response = services.post_query(current_app.config['CLIENT_URL'], one_token, data)
+
+        customer_info = response['customerInfo']
+
+        if customer_info is None:
+            current_app.logger.debug("no response_data found {}".format(customer_info))
+            abort(404)
+
+        current_app.logger.debug("response from report url is {}".format(response))
+
+        customer_info = utils.convert_customer_json_2_object(customer_info)
+
+    return render_template('client.html', form=form, customer=customer_info)
