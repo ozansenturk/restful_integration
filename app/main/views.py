@@ -79,7 +79,7 @@ def transaction_query(page):
         current_app.logger.debug("status is {}".format(status))
         abort(500)
 
-    if request.method == 'GET':
+    if request.method == 'GET' and int(page)>=1 :
         form = TransactionQueryForm(formdata=request.form)
         data = session['data']
         current_app.logger.debug("GET executed")

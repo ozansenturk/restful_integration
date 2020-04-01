@@ -20,7 +20,7 @@
                 <ul class="nav navbar-nav navbar-right">
 
                     <li><a href="{{ url_for('main.report') }}">{{ 'Report' }}</a></li>
-                    <li><a href="{{ url_for('main.transaction_query', page=1) }}">{{ 'Transaction List' }}</a></li>
+                    <li><a href="{{ url_for('main.transaction_query', page=0) }}">{{ 'Transaction List' }}</a></li>
                     <li><a href="{{ url_for('main.transaction') }}">{{ 'Find Transaction' }}</a></li>
                     <li><a href="{{ url_for('main.client') }}">{{ 'Find Client' }}</a></li>
 
