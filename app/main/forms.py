@@ -25,3 +25,8 @@ class TransactionQueryForm(ReportForm):
     page = StringField('Page')
 
     submit = SubmitField('Process')
+
+class TransactionForm(FlaskForm):
+
+    transaction_id = StringField('Status', validators=[DataRequired()])
+    submit = SubmitField('Process')

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <h1>Get Transaction</h1>
+    <div class="row">
+        <div class="col-md-4">
+            {{ wtf.quick_form(form) }}
+        </div>
+        <br>
+        <div>
+            <table class="table table-hover">
+     <thead>
+          <tr>
+              <th>TransactionID</th>
+              <th>ReferenceNo</th>
+              <th>Status</th>
+              <th>Message</th>
+              <th>Type</th>
+              <th>Creation</th>
+
+          </tr>
+     </thead>
+     <tbody>
+           <tr>
+
+               <td>{{ transaction.transactionId }}</td>
+               <td>{{ transaction.referenceNo }}</td>
+               <td>{{ transaction.status }}</td>
+               <td>{{ transaction.message }}</td>
+               <td>{{ transaction.type }}</td>
+               <td>{{ transaction.created_at }}</td>
+
+           </tr>
+
+
+
+     </tbody>
+      </table>
+        </div>
+    </div>
+{% endblock %}

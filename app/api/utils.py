@@ -15,6 +15,25 @@ def convert_report_json_2_object_list(json_list):
     return report_list
 
 
+def convert_transaction_json_2_object(transaction_dict):
+
+    merc = None
+
+    if 'merchant' in transaction_dict:
+        merc_dict = transaction_dict['merchant']
+        merc = Merchant(merc_dict['referenceNo'],
+                        merc_dict['status'],
+                        merc_dict['customData'],
+                        merc_dict['type'],
+                        merc_dict['operation'],
+                        merc_dict['message'],
+                        merc_dict['created_at'],
+                        merc_dict['transactionId']
+                        )
+
+    return merc
+
+
 def add_to_dict_if_form_field_exist(one_dict, dict_key, form_field, is_integer=False):
 
     if form_field != '':
