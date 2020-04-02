@@ -1,7 +1,9 @@
 import requests
 import functools
 import time
-from flask import current_app
+from flask import current_app, session
+from . import bp
+from flask import abort
 
 def cache(_func=None, *, expiration_time):
 
@@ -34,8 +36,9 @@ def cache(_func=None, *, expiration_time):
         return decorator_name(_func)
 
 
+@bp.before_app_request
 @cache(expiration_time=500)
-def get_token(login_url, email, password):
+def get_token():
     """
     gets the token
 
@@ -45,12 +48,13 @@ def get_token(login_url, email, password):
     :return:
     """
 
-    token_body = {"email": email, "password": password}
+    token_body = {"email": current_app.config['EMAIL'], "password": current_app.config['PASSWORD']}
 
-    response = requests.post(current_app.config['HOST']+login_url, json=token_body)
+    response = requests.post(current_app.config['HOST']+current_app.config['LOGIN_URL'], json=token_body)
     current_app.logger.debug("get_token service executed ")
 
-    return response.json()
+    session['token']=response.json()
+    # return response.json()
 
 
 def build_header(token):
@@ -66,9 +70,18 @@ def build_header(token):
     return headers
 
 
-def post_query(url, one_token, data, params=None):
+def post_query(url, data, params=None):
 
-    headers = build_header(one_token)
+    token_json = session['token']
+
+    status = token_json['status']
+    token  = token_json['token']
+
+    if token_json['status'] != 'APPROVED':
+        current_app.logger.debug("status is {}".format(status))
+        abort(500)
+
+    headers = build_header(token)
 
     response = requests.post(current_app.config['HOST']+url, data=data, headers=headers, params=params)
 

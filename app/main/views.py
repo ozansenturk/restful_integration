@@ -21,19 +21,6 @@ def report():
     form = ReportForm()
     if form.validate_on_submit():
 
-        token = services.get_token(current_app.config['LOGIN_URL'],
-                                   current_app.config['EMAIL'], current_app.config['PASSWORD'])
-
-        current_app.logger.debug("token is {}".format(token))
-
-        one_token = token['token']
-        status = token['status']
-
-        if status != 'APPROVED':
-            current_app.logger.debug("status is {}".format(status))
-            abort(500)
-
-
         data = {"fromDate": form.fromDate.data.strftime('%Y-%m-%d'), "toDate": form.toDate.data.strftime('%Y-%m-%d')}
 
         data = utils.add_to_dict_if_form_field_exist(data, 'acquirer', form.acquirer.data, True)
@@ -41,15 +28,12 @@ def report():
 
         current_app.logger.debug("filter data for report is {}".format(data))
 
-        response = services.post_query(current_app.config['REPORT_URL'], one_token, data)
+        response = services.post_query(current_app.config['REPORT_URL'], data)
 
         response_status = response['status']
         response_list = response['response']
 
-        if status != 'APPROVED':
-            current_app.logger.debug("response_status is {}".format(response_status))
-            abort(500)
-        elif len(response_list) == 0:
+        if len(response_list) == 0:
             current_app.logger.debug("no response_data found {}".format(response_list))
             abort(404)
 
@@ -67,24 +51,12 @@ def transaction_query(page):
 
     transaction_query_list = []
 
-    token = services.get_token(current_app.config['LOGIN_URL'],
-                               current_app.config['EMAIL'], current_app.config['PASSWORD'])
-
-    current_app.logger.debug("token is {}".format(token))
-
-    one_token = token['token']
-    status = token['status']
-
-    if status != 'APPROVED':
-        current_app.logger.debug("status is {}".format(status))
-        abort(500)
-
     if request.method == 'GET' and int(page)>=1 :
         form = TransactionQueryForm(formdata=request.form)
         data = session['data']
         current_app.logger.debug("GET executed")
         response = services.post_query(current_app.config['TRANSACTION_QUERY_URL'],
-                                       one_token, data, params={"page": page})
+                                       data, params={"page": page})
 
         response_list = response['data']
 
@@ -126,7 +98,7 @@ def transaction_query(page):
         session['data'] = data
         current_app.logger.debug("filter data for report is {}".format(data))
 
-        response = services.post_query(current_app.config['TRANSACTION_QUERY_URL'], one_token, data)
+        response = services.post_query(current_app.config['TRANSACTION_QUERY_URL'], data)
 
         # current_app.logger.debug("response from report url is {}".format(response))
 
@@ -163,24 +135,11 @@ def transaction():
     form = TransactionForm()
     if form.validate_on_submit():
 
-        token = services.get_token(current_app.config['LOGIN_URL'],
-                                   current_app.config['EMAIL'], current_app.config['PASSWORD'])
-
-        current_app.logger.debug("token is {}".format(token))
-
-        one_token = token['token']
-        status = token['status']
-
-        if status != 'APPROVED':
-            current_app.logger.debug("status is {}".format(status))
-            abort(500)
-
-
         data = {"transactionId": form.transaction_id.data}
 
         current_app.logger.debug("filter data for transaction is {}".format(data))
 
-        response = services.post_query(current_app.config['TRANSACTION_URL'], one_token, data)
+        response = services.post_query(current_app.config['TRANSACTION_URL'], data)
 
         transaction = response['transaction']
 
@@ -203,24 +162,11 @@ def client():
     form = TransactionForm()
     if form.validate_on_submit():
 
-        token = services.get_token(current_app.config['LOGIN_URL'],
-                                   current_app.config['EMAIL'], current_app.config['PASSWORD'])
-
-        current_app.logger.debug("token is {}".format(token))
-
-        one_token = token['token']
-        status = token['status']
-
-        if status != 'APPROVED':
-            current_app.logger.debug("status is {}".format(status))
-            abort(500)
-
-
         data = {"transactionId": form.transaction_id.data}
 
         current_app.logger.debug("filter data for transaction is {}".format(data))
 
-        response = services.post_query(current_app.config['CLIENT_URL'], one_token, data)
+        response = services.post_query(current_app.config['CLIENT_URL'], data)
 
         customer_info = response['customerInfo']
 
