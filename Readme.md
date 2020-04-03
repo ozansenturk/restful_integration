@@ -13,9 +13,11 @@ for along its expiration time. For example, after token retrieved, it is stored
 in the cache. Following token calls first check the expiration time and then the cache.
 When the token is in the cache and expiration time is still valid, 'Get Token' service
 does not make an 'API call' but 'cache read'.
-Additionally, code duplication is avoided as much as possible. For example. 'post_query' 
-service in services module is the key service which is used for all the API calls. This
-eases debugging and readability. 
+
+Additionally, request hooking was used to avoid code duplication. For example. Given that 
+'post_query' service in services module is the key service which is used for all 
+the API calls, 'get_token' service called before each 'post_query' service to inject the 
+token into 'post_query' service. This eases debugging and readability. 
  
 
 Setup:
